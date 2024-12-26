@@ -1,27 +1,27 @@
 package config
 
 import (
-    "log"
-    "os"
+	"log"
+	"os"
 
-    "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
-    APIKey       string
-    Port         string
-    DBConnString string
+	APIKey       string
+	Port         string
+	DBConnString string
 }
 
 func LoadConfig() Config {
-    err := godotenv.Load()
-    if err != nil {
-        log.Fatalf("Ошибка загрузки .env файла: %v", err)
-    }
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Loading .env file error: %v", err)
+	}
 
-    return Config{
-        APIKey:       os.Getenv("API_KEY"),
-        Port:         os.Getenv("PORT"),
-        DBConnString: os.Getenv("DB_CONN_STRING"),
-    }
+	return Config{
+		APIKey:       os.Getenv("API_KEY"),
+		Port:         os.Getenv("PORT"),
+		DBConnString: os.Getenv("DB_CONN_STRING"),
+	}
 }
