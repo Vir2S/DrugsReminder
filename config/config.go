@@ -1,27 +1,33 @@
 package config
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	APIKey       string
-	Port         string
 	DBConnString string
+	Port         string
+	TwilioConfig TwilioConfig
+}
+
+type TwilioConfig struct {
+	AccountSID string
+	AuthToken  string
+	FromNumber string
 }
 
 func LoadConfig() Config {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Loading .env file error: %v", err)
-	}
+	godotenv.Load()
 
 	return Config{
-		APIKey:       os.Getenv("API_KEY"),
+		DBConnString: os.Getenv("DATABASE_URL"),
 		Port:         os.Getenv("PORT"),
-		DBConnString: os.Getenv("DB_CONN_STRING"),
+		TwilioConfig: TwilioConfig{
+			AccountSID: os.Getenv("TWILIO_ACCOUNT_SID"),
+			AuthToken:  os.Getenv("TWILIO_AUTH_TOKEN"),
+			FromNumber: os.Getenv("TWILIO_FROM_NUMBER"),
+		},
 	}
 }
