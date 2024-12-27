@@ -40,28 +40,22 @@ type SendSMSResponse struct {
 func (c *TwilioClient) SendSMS(req SendSMSRequest) (SendSMSResponse, error) {
 	url := fmt.Sprintf(baseUrl, c.accountSID)
 
-	// Формуємо Basic Auth (логін:пароль)
 	auth := fmt.Sprintf("%s:%s", c.accountSID, c.authToken)
-	// Тут краще за все використати Base64
 	encodedAuth := base64.StdEncoding.EncodeToString([]byte(auth))
 
-	// Серіалізуємо тіло запиту в JSON
 	jsonData, err := json.Marshal(req)
 	if err != nil {
 		return SendSMSResponse{}, fmt.Errorf("request marshaling error: %v", err)
 	}
 
-	// Створюємо http-запит (використовуємо іншу змінну замість `req`)
 	httpReq, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return SendSMSResponse{}, fmt.Errorf("error creating HTTP request: %v", err)
 	}
 
-	// Встановлюємо заголовки
 	httpReq.Header.Set("Authorization", "Basic "+encodedAuth)
 	httpReq.Header.Set("Content-Type", "application/json")
 
-	// Відправляємо запит
 	client := &http.Client{}
 	resp, err := client.Do(httpReq)
 	if err != nil {
@@ -69,18 +63,15 @@ func (c *TwilioClient) SendSMS(req SendSMSRequest) (SendSMSResponse, error) {
 	}
 	defer resp.Body.Close()
 
-	// Читаємо відповідь
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return SendSMSResponse{}, fmt.Errorf("error reading response: %v", err)
 	}
 
-	// Перевіряємо статус
 	if resp.StatusCode != http.StatusOK {
 		return SendSMSResponse{}, fmt.Errorf("Twilio API error: %s", string(body))
 	}
 
-	// Парсимо JSON-відповідь Twilio
 	var sendResp SendSMSResponse
 	err = json.Unmarshal(body, &sendResp)
 	if err != nil {
